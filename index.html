@@ -3,24 +3,23 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RCAI 2.0 | Центр Управления Альянса</title>
+    <title>RCAI 2.0 | Центр Управления</title>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f8f9fa; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
-        .container { background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.1); width: 90%; max-width: 400px; text-align: center; }
-        h1 { color: #2d5bff; font-size: 24px; margin-bottom: 20px; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .card { background: white; padding: 25px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 90%; max-width: 400px; text-align: center; }
+        h2 { color: #2d5bff; margin-bottom: 20px; }
         input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 10px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; background: #2d5bff; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        button:hover { background: #1a44cc; }
-        #response { margin-top: 20px; text-align: left; font-size: 14px; color: #444; min-height: 50px; border-top: 1px solid #eee; padding-top: 15px; }
+        button { width: 100%; padding: 12px; background: #2d5bff; color: white; border: none; border-radius: 10px; font-weight: bold; cursor: pointer; }
+        #response { margin-top: 20px; text-align: left; font-size: 14px; color: #444; border-top: 1px solid #eee; padding-top: 15px; }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>💎 RCAI COMMAND</h1>
-    <input type="text" id="user-input" placeholder="Введите приказ Лидера...">
+<div class="card">
+    <h2>💎 RCAI COMMAND</h2>
+    <input type="text" id="user-input" placeholder="Введите приказ...">
     <button onclick="askRCAI()">ОТПРАВИТЬ</button>
-    <div id="response">Система готова к работе...</div>
+    <div id="response">Ожидание авторизации Лидера...</div>
 </div>
 
 <script>
@@ -31,10 +30,10 @@ async function askRCAI() {
 
     if (!prompt) return;
 
-    responseArea.innerHTML = "<em>Запрос отправлен в зашифрованный сектор...</em>";
+    responseArea.innerHTML = "<em>Связь с сервером Альянса...</em>";
 
     try {
-        // Ссылка на ваш бэкенд в Vercel
+        // Проверьте, чтобы эта ссылка совпадала с той, что даст Vercel после Deploy!
         const serverUrl = 'https://rcai-backend.vercel.app/api/ask'; 
 
         const response = await fetch(serverUrl, {
@@ -43,7 +42,7 @@ async function askRCAI() {
             body: JSON.stringify({ prompt: prompt })
         });
 
-        if (!response.ok) throw new Error('Шлюз Альянса недоступен. Проверьте Deploy в Vercel.');
+        if (!response.ok) throw new Error('Шлюз недоступен. Проверьте статус Vercel.');
 
         const data = await response.json();
         responseArea.innerText = data.answer;
