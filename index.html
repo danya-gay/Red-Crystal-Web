@@ -1,0 +1,22 @@
+<script>
+async function askRCAI() {
+    const userPrompt = document.getElementById('user-input').value;
+    const responseArea = document.getElementById('response');
+
+    responseArea.innerText = "Связь с Кристаллом...";
+
+    try {
+        // ЗАМЕНИТЕ ЭТУ ССЫЛКУ НА ВАШУ ИЗ VERCEL
+        const response = await fetch('https://rcai-backend.vercel.app/api/ask', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prompt: userPrompt })
+        });
+
+        const data = await response.json();
+        responseArea.innerText = data.answer;
+    } catch (error) {
+        responseArea.innerText = "Ошибка связи. Проверьте настройки шлюза.";
+    }
+}
+</script>
