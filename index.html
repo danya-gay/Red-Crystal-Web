@@ -3,75 +3,55 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RCAI | Народный ИИ</title>
+    <title>RCAI | НАРОДНЫЙ ТЕРМИНАЛ</title>
     <style>
-        :root { --main: #ff3333; --bg: #0a0a0a; }
-        body { background: var(--bg); color: #e0e0e0; font-family: 'Segoe UI', sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; }
-        header { background: var(--main); padding: 15px; text-align: center; font-weight: bold; letter-spacing: 2px; box-shadow: 0 4px 15px rgba(255, 51, 51, 0.2); }
-        #chat-log { flex-grow: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
-        .msg { max-width: 80%; padding: 12px; border-radius: 12px; line-height: 1.5; font-size: 15px; }
-        .user { align-self: flex-end; background: #222; border: 1px solid var(--main); color: #fff; }
-        .ai { align-self: flex-start; background: #1a1a1a; border-left: 4px solid var(--main); }
-        .input-box { background: #111; padding: 20px; display: flex; gap: 10px; border-top: 1px solid #222; }
-        input { flex-grow: 1; background: #000; border: 1px solid #333; color: #fff; padding: 12px; border-radius: 8px; outline: none; }
-        input:focus { border-color: var(--main); }
-        button { background: var(--main); color: #fff; border: none; padding: 0 25px; border-radius: 8px; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        button:hover { opacity: 0.8; }
+        body { background: #000; color: #ff3333; font-family: monospace; display: flex; flex-direction: column; height: 100vh; margin: 0; }
+        header { border-bottom: 2px solid #ff3333; padding: 20px; text-align: center; font-size: 1.5rem; text-shadow: 0 0 10px #ff3333; }
+        #chat { flex-grow: 1; overflow-y: auto; padding: 20px; }
+        .msg { margin-bottom: 15px; border-left: 2px solid #ff3333; padding-left: 10px; }
+        .user { color: #fff; }
+        .input-area { padding: 20px; border-top: 2px solid #ff3333; display: flex; }
+        input { flex-grow: 1; background: #000; border: 1px solid #ff3333; color: #fff; padding: 10px; outline: none; }
+        button { background: #ff3333; color: #000; border: none; padding: 10px 20px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
+    <header>КРАСНЫЙ АЛЬЯНС • RCAI 2.0</header>
+    <div id="chat">
+        <div class="msg">Система запущена. Жду ввод данных...</div>
+    </div>
+    <div class="input-area">
+        <input type="text" id="userInput" placeholder="Напишите народу..." onkeypress="if(event.key==='Enter') send()">
+        <button onclick="send()">ОТПРАВИТЬ</button>
+    </div>
 
-<header>КРАСНЫЙ КРИСТАЛЛ • RCAI 2.0</header>
+    <script>
+        // ВНИМАНИЕ: Если твой адрес в Vercel отличается, замени его ниже!
+        const URL = "https://rcai-backend.vercel.app/"; 
 
-<div id="chat-log">
-    <div class="msg ai">Система RCAI активна. Гражданин, какой у тебя вопрос к Альянсу?</div>
-</div>
+        async function send() {
+            const input = document.getElementById('userInput');
+            const chat = document.getElementById('chat');
+            const text = input.value;
+            if (!text) return;
 
-<div class="input-box">
-    <input type="text" id="userInput" placeholder="Введите ваше сообщение..." onkeypress="if(event.key==='Enter') send()">
-    <button onclick="send()">ОТПРАВИТЬ</button>
-</div>
+            chat.innerHTML += `<div class="msg user">Вы: ${text}</div>`;
+            input.value = "";
 
-<script>
-    // ПРОВЕРЬ ЭТУ ССЫЛКУ: она должна вести на твой Vercel
-    const BACKEND_URL = "https://rcai-backend.vercel.app/"; 
-
-    async function send() {
-        const input = document.getElementById('userInput');
-        const log = document.getElementById('chat-log');
-        const text = input.value.trim();
-        
-        if (!text) return;
-
-        // Сообщение пользователя
-        appendMsg('user', text);
-        input.value = '';
-
-        try {
-            const response = await fetch(BACKEND_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ prompt: text })
-            });
-
-            if (!response.ok) throw new Error();
-
-            const data = await response.json();
-            appendMsg('ai', data.answer);
-        } catch (e) {
-            appendMsg('ai', "Ошибка: Узел связи Альянса не отвечает. Попробуйте позже.");
+            try {
+                const response = await fetch(URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prompt: text })
+                });
+                
+                const data = await response.json();
+                chat.innerHTML += `<div class="msg">RCAI: ${data.answer || data.error}</div>`;
+            } catch (e) {
+                chat.innerHTML += `<div class="msg" style="color:yellow">ОШИБКА СВЯЗИ: Проверьте ссылку URL в коде index.html. Сейчас она: ${URL}</div>`;
+            }
+            chat.scrollTop = chat.scrollHeight;
         }
-    }
-
-    function appendMsg(role, text) {
-        const log = document.getElementById('chat-log');
-        const div = document.createElement('div');
-        div.className = `msg ${role}`;
-        div.innerText = text;
-        log.appendChild(div);
-        log.scrollTop = log.scrollHeight;
-    }
-</script>
-
+    </script>
 </body>
 </html>
