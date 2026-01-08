@@ -1,34 +1,43 @@
-<script>
-async function askRCAI() {
-    const inputField = document.getElementById('user-input');
-    const responseArea = document.getElementById('response');
-    const prompt = inputField.value;
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>RCAI 2.0 | Центр Управления</title>
+    <style>
+        body { font-family: sans-serif; background: #f0f2f5; display: flex; flex-direction: column; align-items: center; padding: 20px; }
+        .card { background: white; padding: 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); width: 100%; max-width: 400px; }
+        input { width: 90%; padding: 10px; margin-bottom: 10px; border: 1px solid #ddd; border-radius: 8px; }
+        button { width: 100%; padding: 10px; background: #2d5bff; color: white; border: none; border-radius: 8px; cursor: pointer; }
+        #response { margin-top: 20px; white-space: pre-wrap; font-size: 14px; color: #333; }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h2>💎 RCAI Command</h2>
+        <input type="text" id="user-input" placeholder="Введите приказ...">
+        <button onclick="askRCAI()">ОТПРАВИТЬ</button>
+        <div id="response">Ожидание команды...</div>
+    </div>
 
-    if (!prompt) return;
-
-    responseArea.innerHTML = "<em>Запрос отправлен в зашифрованный сектор...</em>";
-
-    try {
-        // СЮДА ВСТАВЬТЕ ВАШУ ССЫЛКУ ИЗ VERCEL
-        const serverUrl = 'https://rcai-backend.vercel.app/api/ask'; 
-
-        const response = await fetch(serverUrl, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ prompt: prompt })
-        });
-
-        if (!response.ok) throw new Error('Шлюз Альянса недоступен');
-
-        const data = await response.json();
+    <script>
+    async function askRCAI() {
+        const input = document.getElementById('user-input');
+        const resArea = document.getElementById('response');
+        resArea.innerText = "Связь с Кристаллом...";
         
-        // Красиво выводим ответ от RCAI
-        responseArea.innerText = data.answer;
-        inputField.value = ''; // Очищаем поле ввода
-
-    } catch (error) {
-        responseArea.innerHTML = `<span style="color: red;">Ошибка: ${error.message}</span>`;
-        console.error('Security Breach or Connection Error:', error);
+        try {
+            // ВАЖНО: Проверь, что в ссылке в конце есть /api/ask или просто /
+            const response = await fetch('https://rcai-backend.vercel.app/api/ask', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt: input.value })
+            });
+            const data = await response.json();
+            resArea.innerText = data.answer || data.error;
+        } catch (e) {
+            resArea.innerText = "Ошибка: " + e.message;
+        }
     }
-}
-</script>
+    </script>
+</body>
+</html>
