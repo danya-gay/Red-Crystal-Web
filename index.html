@@ -3,108 +3,81 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SULTAN-PRO | RCAI 2.0 SECURITY</title>
+    <title>RCAI | Народный ИИ Альянса</title>
     <style>
-        :root { --color: #33ff33; --bg: #050a05; --shadow: rgba(51, 255, 51, 0.3); }
-        body { background: var(--bg); color: var(--color); font-family: 'Courier New', monospace; margin: 0; overflow: hidden; display: flex; flex-direction: column; height: 100vh; }
+        :root { --main-color: #ff3333; --bg-color: #1a1a1a; }
+        body { background: var(--bg-color); color: #fff; font-family: 'Segoe UI', Tahoma, sans-serif; margin: 0; display: flex; flex-direction: column; height: 100vh; }
         
-        #login-screen { position: fixed; inset: 0; background: var(--bg); display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; border: 5px double var(--color); margin: 10px; }
-        #main-terminal { display: none; flex-direction: column; height: 100%; padding: 20px; box-sizing: border-box; }
+        header { background: var(--main-color); padding: 15px; text-align: center; box-shadow: 0 2px 10px rgba(0,0,0,0.5); }
+        h1 { margin: 0; font-size: 1.2rem; letter-spacing: 2px; }
 
-        .crt-effect { pointer-events: none; position: fixed; inset: 0; background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.1) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.03), rgba(0, 255, 0, 0.01), rgba(0, 0, 255, 0.03)); z-index: 200; background-size: 100% 2px, 3px 100%; }
-        #chat-log { flex-grow: 1; overflow-y: auto; border: 1px solid var(--color); padding: 15px; margin-bottom: 15px; background: rgba(0, 20, 0, 0.5); box-shadow: inset 0 0 10px var(--shadow); scroll-behavior: smooth; }
-        
-        .msg { margin-bottom: 12px; border-left: 3px solid var(--color); padding-left: 10px; animation: blink 0.1s; }
-        .user { color: #fff; border-color: #fff; }
-        .system-label { font-weight: bold; text-transform: uppercase; font-size: 0.8em; opacity: 0.7; display: block; }
+        #chat-container { flex-grow: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; }
+        .message { max-width: 85%; padding: 12px; border-radius: 10px; line-height: 1.4; }
+        .user-msg { align-self: flex-end; background: #333; border-right: 4px solid var(--main-color); }
+        .ai-msg { align-self: flex-start; background: #222; border-left: 4px solid #fff; }
 
-        input, button { background: transparent; border: 1px solid var(--color); color: var(--color); padding: 10px; font-family: inherit; outline: none; }
-        button { cursor: pointer; transition: 0.3s; text-transform: uppercase; font-weight: bold; }
-        button:hover { background: var(--color); color: var(--bg); box-shadow: 0 0 15px var(--color); }
-
-        .auth-box { text-align: center; border: 1px solid var(--color); padding: 40px; box-shadow: 0 0 20px var(--shadow); }
-        @keyframes blink { from { opacity: 0; } to { opacity: 1; } }
+        .input-area { background: #222; padding: 15px; display: flex; gap: 10px; border-top: 1px solid #333; }
+        input { flex-grow: 1; background: #111; border: 1px solid #444; color: #fff; padding: 12px; border-radius: 5px; outline: none; }
+        button { background: var(--main-color); color: white; border: none; padding: 0 20px; border-radius: 5px; font-weight: bold; cursor: pointer; }
+        button:active { transform: scale(0.95); }
     </style>
 </head>
 <body>
-    <div class="crt-effect"></div>
 
-    <div id="login-screen">
-        <div class="auth-box">
-            <h1 style="letter-spacing: 5px;">OCTAGON-ID</h1>
-            <p>ТРЕБУЕТСЯ АВТОРИЗАЦИЯ ЛИДЕРА</p>
-            <input type="password" id="passkey" placeholder="ВВЕДИТЕ КОД ДОСТУПА">
-            <button onclick="authenticate()">ВОЙТИ</button>
-            <p id="error" style="color: red; display: none; font-size: 0.8em; margin-top: 10px;">ДОСТУП ЗАПРЕЩЕН</p>
-        </div>
-    </div>
+<header>
+    <h1>КРАСНЫЙ АЛЬЯНС • НАРОДНЫЙ ТЕРМИНАЛ</h1>
+</header>
 
-    <div id="main-terminal">
-        <header style="margin-bottom: 10px; display: flex; justify-content: space-between; font-size: 0.8em;">
-            <span>RCAI v.2.0 SECURITY</span>
-            <span id="clock"></span>
-        </header>
-        <div id="chat-log"></div>
-        <div style="display: flex; gap: 10px;">
-            <input type="text" id="userInput" placeholder="Введите директиву..." style="flex-grow: 1;" onkeypress="if(event.key==='Enter') send()">
-            <button onclick="send()">ИСПОЛНИТЬ</button>
-        </div>
-    </div>
+<div id="chat-container">
+    <div class="message ai-msg">Приветствуем, гражданин. Чем RCAI может помочь Альянсу сегодня?</div>
+</div>
 
-    <script>
-        const SECRET_CODE = "1991"; 
-        // ВАЖНО: Замените на вашу ссылку из Vercel
-        const BACKEND_URL = "https://rcai-backend.vercel.app/api/ask"; 
+<div class="input-area">
+    <input type="text" id="userInput" placeholder="Введите вопрос для ИИ..." onkeypress="if(event.key==='Enter') send()">
+    <button onclick="send()">ОТПРАВИТЬ</button>
+</div>
 
-        function authenticate() {
-            const val = document.getElementById('passkey').value;
-            if(val === SECRET_CODE) {
-                document.getElementById('login-screen').style.display = 'none';
-                document.getElementById('main-terminal').style.display = 'flex';
-                addMsg('system', 'Авторизация пройдена. Канал связи зашифрован. RCAI 2.0 активен.');
-            } else {
-                document.getElementById('error').style.display = 'block';
-            }
+<script>
+    const BACKEND_URL = "https://rcai-backend.vercel.app/api/ask"; // Твоя ссылка Vercel
+
+    async function send() {
+        const input = document.getElementById('userInput');
+        const chat = document.getElementById('chat-container');
+        const text = input.value.trim();
+        
+        if (!text) return;
+
+        // Добавляем сообщение пользователя
+        const userDiv = document.createElement('div');
+        userDiv.className = 'message user-msg';
+        userDiv.innerText = text;
+        chat.appendChild(userDiv);
+        input.value = '';
+        chat.scrollTop = chat.scrollHeight;
+
+        try {
+            const response = await fetch(BACKEND_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ prompt: text })
+            });
+
+            const data = await response.json();
+            
+            // Добавляем ответ ИИ
+            const aiDiv = document.createElement('div');
+            aiDiv.className = 'message ai-msg';
+            aiDiv.innerText = data.answer || "Ошибка связи с ядром.";
+            chat.appendChild(aiDiv);
+        } catch (e) {
+            const errDiv = document.createElement('div');
+            errDiv.className = 'message ai-msg';
+            errDiv.innerText = "Система временно недоступна. Попробуйте позже.";
+            chat.appendChild(errDiv);
         }
+        chat.scrollTop = chat.scrollHeight;
+    }
+</script>
 
-        async function send() {
-            const input = document.getElementById('userInput');
-            const text = input.value;
-            if(!text) return;
-
-            addMsg('user', text);
-            input.value = '';
-
-            try {
-                // Теперь мы стучимся не в Groq напрямую, а на ВАШ сервер
-                const response = await fetch(BACKEND_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prompt: text })
-                });
-
-                if (!response.ok) throw new Error('ШЛЮЗ НЕДОСТУПЕН');
-                
-                const data = await response.json();
-                addMsg('ai', data.answer);
-            } catch(e) {
-                addMsg('system', 'ОШИБКА: Сбой защищенного канала связи.');
-            }
-        }
-
-        function addMsg(role, text) {
-            const log = document.getElementById('chat-log');
-            const div = document.createElement('div');
-            div.className = `msg ${role === 'user' ? 'user' : ''}`;
-            const label = role === 'ai' ? 'AIC-1' : role === 'user' ? 'ЛИДЕР' : 'СИСТЕМА';
-            div.innerHTML = `<span class="system-label">${label}</span>${text}`;
-            log.appendChild(div);
-            log.scrollTop = log.scrollHeight;
-        }
-
-        setInterval(() => {
-            document.getElementById('clock').innerText = new Date().toLocaleString();
-        }, 1000);
-    </script>
 </body>
 </html>
